@@ -1,0 +1,73 @@
+{
+  "_comment": "sing-box 服务端配置模板 / VLESS+Reality 主力节点",
+  "_usage": "1. 修改 UUID、privateKey、shortId  2. 启用 Hysteria 2 时需要 ACME 域名",
+
+  "log": {
+    "level": "info",
+    "timestamp": true
+  },
+
+  "inbounds": [
+    {
+      "_comment": "VLESS + Reality（主力 TCP 节点）",
+      "type": "vless",
+      "tag": "vless-reality-in",
+      "listen": "::",
+      "listen_port": 443,
+      "users": [
+        {
+          "uuid": "你的UUID-用-xray-uuid-生成",
+          "flow": "xtls-rprx-vision"
+        }
+      ],
+      "tls": {
+        "enabled": true,
+        "server_name": "www.apple.com",
+        "reality": {
+          "enabled": true,
+          "handshake": {
+            "server": "www.apple.com",
+            "server_port": 443
+          },
+          "private_key": "你的REALITY私钥-用-sing-box-generate-reality-key-生成",
+          "short_id": ["你的短ID-16位以内"]
+        }
+      }
+    },
+
+    {
+      "_comment": "Hysteria 2（备用 UDP 加速节点，启用前需要 ACME 域名）",
+      "_disabled": true,
+      "type": "hysteria2",
+      "tag": "hy2-in",
+      "listen": "::",
+      "listen_port": 443,
+      "up_mbps": 100,
+      "down_mbps": 100,
+      "users": [
+        {
+          "password": "你的Hysteria2强密码"
+        }
+      ],
+      "tls": {
+        "enabled": true,
+        "acme": {
+          "domain": "hy2.yourdomain.com",
+          "email": "your@email.com"
+        }
+      },
+      "masquerade": "https://www.bing.com"
+    }
+  ],
+
+  "outbounds": [
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "block",
+      "tag": "block"
+    }
+  ]
+}

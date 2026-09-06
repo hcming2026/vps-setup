@@ -1,0 +1,127 @@
+# Clash Verge Rev 客户端配置模板
+# 配合 vps-setup 项目使用
+#
+# 使用方法：
+#   1. 复制整个文件内容到 Clash Verge Rev
+#   2. 把 proxies 部分的 vless 链接替换为你的节点链接
+#   3. 或者在 Profiles → Import from URL 粘贴 vless:// 链接
+
+port: 7890
+socks-port: 7891
+allow-lan: false
+mode: rule
+log-level: info
+external-controller: 127.0.0.1:9090
+
+# ============== 节点列表 ==============
+# 把 vless:// 链接解析后填到这里
+# 一键脚本会自动输出格式正确的配置，可直接使用脚本输出
+proxies:
+  - name: "Vultr-Tokyo-Reality"
+    type: vless
+    server: 你的VPS_IP
+    port: 443
+    uuid: 你的UUID
+    flow: xtls-rprx-vision
+    tls: true
+    servername: www.apple.com
+    reality-opts:
+      public-key: 你的REALITY公钥
+      short-id: 你的短ID
+    client-fingerprint: chrome
+
+  # 如启用 Hysteria 2 备用节点：
+  # - name: "Vultr-Tokyo-Hysteria2"
+  #   type: hysteria2
+  #   server: 你的VPS_IP
+  #   port: 443
+  #   password: 你的Hysteria2密码
+  #   sni: hy2.yourdomain.com
+
+# ============== 代理组 ==============
+proxy-groups:
+  - name: "🚀 节点选择"
+    type: select
+    proxies:
+      - Vultr-Tokyo-Reality
+      # - Vultr-Tokyo-Hysteria2  # 启用时取消注释
+      - DIRECT
+
+  - name: "🎬 流媒体"
+    type: select
+    proxies:
+      - Vultr-Tokyo-Reality
+      - DIRECT
+
+  - name: "✈️ 代理直连分流"
+    type: select
+    proxies:
+      - Vultr-Tokyo-Reality
+      - DIRECT
+
+# ============== 分流规则 ==============
+# 国内直连 / 国外代理 / 私有 IP 直连
+rules:
+  # ===== 私有 IP 直连 =====
+  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+  - IP-CIDR,169.254.0.0/16,DIRECT,no-resolve
+
+  # ===== 国内域名直连 =====
+  - GEOIP,CN,DIRECT
+  - MATCH,🚀 节点选择
+
+# ============== DNS 配置（防泄漏） ==============
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  nameserver:
+    - https://1.1.1.1/dns-query
+    - https://8.8.8.8/dns-query
+    - https://9.9.9.9/dns-query
+  nameserver-policy:
+    "+.cn": [223.5.5.5, 119.29.29.29]
+  fallback:
+    - https://1.1.1.1/dns-query
+    - https://8.8.8.8/dns-query
+    - https://9.9.9.9/dns-query
+  fallback-filter:
+    geoip: true
+    ipcidr:
+      - 240.0.0.0/4
+      - 0.0.0.0/32
+      - 1.0.0.0/24
+      - 4.0.0.0/24
+      - 8.0.0.0/24
+      - 27.0.0.0/24
+
+# ============== 性能优化 ==============
+tcp-concurrent: true
+find-process-mode: strict
+global-ua: clash.meta
+keep-alive-idle: 300
+keep-alive-interval: 15
+disable-keep-alive: false
+
+# ============== 规则集订阅（可选） ==============
+# 如需更精细的分流（Netflix / Disney+ / Telegram 等），取消注释并启用
+# rule-providers:
+#   private: # 私有 IP
+#     type: http
+#     behavior: classical
+#     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geoip/private.yaml"
+#     interval: 86400
+#   cn: # 国内 IP
+#     type: http
+#     behavior: classical
+#     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geoip/cn.yaml"
+#     interval: 86400
+#   applications: # 应用直连
+#     type: http
+#     behavior: classical
+#     url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/rule-set/application.yaml"
+#     interval: 86400
