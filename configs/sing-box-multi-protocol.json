@@ -1,0 +1,93 @@
+{
+  "_comment": "sing-box 多协议配置：VLESS+Reality 主力 + Hysteria 2 备用",
+  "_usage": "1. 修改所有 uuid / private_key / password / 域名  2. 启用 Hysteria 2 需要 ACME 域名",
+
+  "log": {
+    "level": "info",
+    "timestamp": true
+  },
+
+  "inbounds": [
+    {
+      "_comment": "==== VLESS+Reality（TCP 主力，长期稳定）====",
+      "type": "vless",
+      "tag": "vless-reality-in",
+      "listen": "::",
+      "listen_port": 443,
+      "users": [
+        {
+          "uuid": "替换为你的UUID-用-xray-uuid-或-uuidgen-生成",
+          "flow": "xtls-rprx-vision"
+        }
+      ],
+      "tls": {
+        "enabled": true,
+        "server_name": "www.apple.com",
+        "reality": {
+          "enabled": true,
+          "handshake": {
+            "server": "www.apple.com",
+            "server_port": 443
+          },
+          "private_key": "替换为你的私钥-用-sing-box-generate-reality-keypair-生成",
+          "short_id": ["替换为16位以内的随机字符串"]
+        }
+      }
+    },
+
+    {
+      "_comment": "==== Hysteria 2（UDP 加速备用，需要 ACME 域名）====",
+      "type": "hysteria2",
+      "tag": "hy2-in",
+      "listen": "::",
+      "listen_port": 8443,
+      "up_mbps": 100,
+      "down_mbps": 1000,
+      "users": [
+        {
+          "password": "替换为强密码-如openssl-rand-base64-32"
+        }
+      ],
+      "tls": {
+        "enabled": true,
+        "acme": {
+          "domain": "hy2.yourdomain.com",
+          "email": "your@email.com"
+        }
+      },
+      "masquerade": "https://www.bing.com"
+    },
+
+    {
+      "_comment": "==== AnyTLS（sing-box 1.12+ 新协议，观察期）====",
+      "type": "anytls",
+      "tag": "anytls-in",
+      "listen": "::",
+      "listen_port": 9443,
+      "users": [
+        {
+          "name": "vps-setup",
+          "password": "替换为强密码"
+        }
+      ],
+      "tls": {
+        "enabled": true,
+        "acme": {
+          "domain": "anytls.yourdomain.com",
+          "email": "your@email.com"
+        }
+      }
+    }
+  ],
+
+  "outbounds": [
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "block",
+      "tag": "block"
+    }
+  ]
+}

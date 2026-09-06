@@ -30,13 +30,17 @@ vps-setup/
 │   ├── 01-方案选择与思路.md        ← 思路梳理 + 选型对比
 │   ├── 02-Windows操作指南.md       ← Windows 用户完整 6 步走
 │   ├── 03-维护与异常处理.md        ← 日常维护 + 异常处理预案
-│   └── 04-AI研究基础设施指南.md    ← 主指南（GPT 科研 + 聚合 Dashboard）
+│   ├── 04-AI研究基础设施指南.md    ← 主指南（GPT 科研 + 聚合 Dashboard）
+│   ├── 05-VLESS+Reality深度解析.md  ← 协议原理 + 抗检测机制 ⭐新增
+│   └── 06-多协议实战.md            ← Reality + Hysteria 2 + CDN 实战 ⭐新增
 ├── scripts/                        ← 部署脚本
 │   ├── deploy-reality.sh           ← VPS 一键部署（BBR + 防火墙 + Reality）
 │   ├── harden-server.sh            ← 服务器基础加固
-│   └── backup-config.sh            ← 配置自动备份
+│   ├── backup-config.sh            ← 配置自动备份
+│   └── generate-subscription.sh    ← 生成订阅链接（Clash / Sing-box）⭐新增
 └── configs/                        ← 配置模板
-    ├── sing-box-server.json        ← sing-box 服务端配置
+    ├── sing-box-server.json        ← sing-box Reality 单协议配置
+    ├── sing-box-multi-protocol.json ← sing-box 多协议配置（Reality + Hy2 + AnyTLS）⭐新增
     └── clash-verge.yaml            ← Clash Verge Rev 客户端配置
 ```
 
@@ -131,12 +135,15 @@ GPT Pro 订阅另算（$20-200/月，按使用强度选）。
 ```
 阶段 1（Week 1）   单 Reality 节点 + Clash Verge
        ↓ IP 被封经验
-阶段 2（Month 2）  增加 Hysteria2 备用协议
+阶段 2（Month 2）  增加 Hysteria2 备用协议（参考 docs/06）
        ↓ 想加 CDN
 阶段 3（Month 3+） Cloudflare CDN + 多 VPS 备份
        ↓ 流量上来
 阶段 4（半年后）   多协议 + 多机房 + 自动化运维
 ```
+
+📖 **协议深度**：阅读 [docs/05-VLESS+Reality深度解析.md](docs/05-VLESS+Reality深度解析.md) 了解 Reality 为什么抗检测
+📖 **多协议配置**：阅读 [docs/06-多协议实战.md](docs/06-多协议实战.md) 学习 Reality + Hy2 + CDN 组合
 
 ---
 
@@ -146,6 +153,8 @@ GPT Pro 订阅另算（$20-200/月，按使用强度选）。
 - 📗 [docs/02-Windows操作指南.md](docs/02-Windows操作指南.md) — Windows 完整操作流程
 - 📕 [docs/03-维护与异常处理.md](docs/03-维护与异常处理.md) — 日常维护 + 异常处理
 - 📙 [docs/04-AI研究基础设施指南.md](docs/04-AI研究基础设施指南.md) — GPT 科研 + 聚合 Dashboard
+- 🔥 [docs/05-VLESS+Reality深度解析.md](docs/05-VLESS+Reality深度解析.md) — **协议原理 + 为什么抗检测**（强烈推荐阅读）
+- 🔥 [docs/06-多协议实战.md](docs/06-多协议实战.md) — **Reality + Hysteria 2 + CDN 实战**（多协议场景）
 
 ---
 
